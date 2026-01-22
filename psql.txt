@@ -1,0 +1,210 @@
+Tables:
+
+
+CREATE TABLE IF NOT EXISTS Companies (
+  company_id SERIAL PRIMARY KEY,
+  company_name VARCHAR UNIQUE NOT NULL,
+  active BOOLEAN
+);
+
+
+CREATE TABLE IF NOT EXISTS Categories (
+  category_id SERIAL PRIMARY KEY,
+  category_name VARCHAR UNIQUE NOT NULL
+);
+
+
+
+CREATE TABLE IF NOT EXISTS Products (
+  product_id SERIAL PRIMARY KEY,
+  product_name VARCHAR UNIQUE NOT NULL,
+  company_id INTEGER,
+  description VARCHAR,
+  price FLOAT,
+  active BOOLEAN,
+  FOREIGN KEY (company_id)
+    REFERENCES Companies (company_id)
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS Warranties (
+  warranty_id SERIAL PRIMARY KEY,
+  warranty_months INTEGER NOT NULL,
+  product_id INTEGER,
+  FOREIGN KEY (product_id)
+    REFERENCES Products (product_id)
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS ProductsCategoriesXref (
+    product_id INTEGER NOT NULL,
+    category_id INTEGER NOT NULL,
+    PRIMARY KEY (product_id, category_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id),
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);
+
+
+Create:
+
+
+INSERT INTO Companies (
+  company_name,
+  active
+) VALUES (
+  'Pizza Hut',
+  True
+);
+
+
+INSERT INTO Categories (
+  category_name
+
+) VALUES (
+  'Food'
+
+);
+
+Note: I added another category below to run the update ProductsCategoriesXref table later on.
+
+INSERT INTO Categories (
+  category_name
+
+) VALUES (
+  'Offices'
+
+);
+
+
+
+INSERT INTO Products (
+  product_name,
+  company_id,
+  description,
+  price,
+  active
+) VALUES (
+  'Supreme Pizza',
+   1,
+   'A hearty topping filled pizza',
+   12.99,
+   True
+);
+
+
+INSERT INTO Warranties (
+  warranty_months,
+  product_id
+) VALUES (
+  1,
+  1
+);
+
+
+INSERT INTO ProductsCategoriesXref(
+  product_id,
+  category_id
+) VALUES (
+  1,
+  1
+);
+
+
+Read:
+
+
+SELECT * FROM Companies;
+
+
+SELECT * FROM Categories;
+
+
+SELECT * FROM Products;
+
+
+SELECT * FROM Warranties;
+
+
+SELECT * FROM Products WHERE active = True;
+
+
+SELECT * FROM Products WHERE company_id = 1;
+
+
+SELECT c.*, p.*
+FROM Categories c
+JOIN ProductsCategoriesXref pcx
+  ON pcx.category_id = c.category_id
+JOIN Products p
+  ON p.product_id = pcx.product_id
+WHERE c.category_id = 1;
+
+
+
+SELECT *
+FROM Products p
+LEFT JOIN Warranties w
+  ON w.product_id = p.product_id
+LEFT JOIN ProductsCategoriesXref pcx
+  ON pcx.product_id = p.product_id
+LEFT JOIN Categories c
+  ON c.category_id = pcx.category_id
+WHERE p.product_id = 1;
+
+
+
+SELECT * FROM Warranties where warranty_id = 1;
+
+
+Update:
+
+
+UPDATE Companies 
+SET company_name = 'Dominos'
+WHERE company_id = 1;
+
+
+UPDATE Categories
+SET category_name = 'Restaurants'
+WHERE category_id = 1;
+
+
+UPDATE Products 
+SET product_name='Dough Machine', description='A machine built for dough balls', price=149.99
+WHERE product_id = 1;
+
+
+UPDATE Warranties 
+SET warranty_months=3
+WHERE warranty_id = 1;
+
+
+UPDATE ProductsCategoriesXref
+SET category_id = 2
+WHERE category_id = 1;
+
+
+
+Delete:
+
+
+
+
+DELETE FROM Warranties WHERE product_id = 1;
+
+DELETE FROM ProductsCategoriesXref WHERE product_id = 1;
+
+DELETE FROM Products WHERE product_id = 1;
+
+
+DELETE FROM Categories WHERE category_id = 1;
+
+
+DELETE FROM Companies WHERE company_id = 1;
+
+
+DELETE FROM Warranties WHERE warranty_id = 1; (This one should already be deleted because of the first query but I included it anyways.)
